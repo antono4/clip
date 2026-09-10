@@ -113,7 +113,7 @@ if(!d.ok)throw new Error(d.error||"Server gagal.");
 urlFile=d.url;vid.src=urlFile;vid.style.display="block";vid.load();
 tb.style.display="flex";st.textContent="Video MP4 jadi. Bisa diputar atau diunduh.";
 }else{
-st.textContent="Server tidak terdeteksi. Jalankan python3 web_video.py dulu, lalu buka lewat http://localhost:8000/.";
+st.textContent="Server tidak terdeteksi. Pilih mode Offline (browser" di atas, atau jalankan dulu: python3 web_video.py.";
 }}catch(err){st.textContent="Error: "+err.message;}
 finally{btn.disabled=false;}});
 
