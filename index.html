@@ -90,10 +90,11 @@ const $=(id)=>document.getElementById(id);
 const judul=$("judul"),narasi=$("narasi"),bahasa=$("bahasa"),mode=$("mode");
 const btn=$("btn"),st=$("status"),vid=$("player"),tb=$("toolbar");
 const unduh=$("btnUnduh"),buka=$("btnBuka");
-let urlFile=null,blobUrl=null;
+let urlFile=null;
 
 async function cekServer(){
-try{const r=await fetch("/",{method:"HEAD"});return r.ok;}catch(_){return false;}}
+try{const r=await fetch("/ping");if(!r.ok)return false;
+const d=await r.json();return d&&d.ok===true;}catch(_){return false;}}
 
 $("form").addEventListener("submit",async(e)=>{
 e.preventDefault();const t=narasi.value.trim();
@@ -105,18 +106,20 @@ const pakai=(mode.value==="ai")&&await cekServer();
 if(pakai){
 st.textContent="Server AI sedang membuat video MP4... tunggu sebentar.";
 const r=await fetch("/buat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({judul:judul.value,narasi:t,bahasa:bahasa.value})});
+const jenis=(r.headers.get("content-type")||"");
+if(!jenis.includes("application/json"))throw new Error("Halaman ini dibuka tanpa server AI. Jalankan python3 web_video.py, lalu muat ulang halaman lewat http://localhost:8000/.");
 const d=await r.json();
 if(!d.ok)throw new Error(d.error||"Server gagal.");
 urlFile=d.url;vid.src=urlFile;vid.style.display="block";vid.load();
 tb.style.display="flex";st.textContent="Video MP4 jadi. Bisa diputar atau diunduh.";
 }else{
-st.textContent="Server tidak terdeteksi. Jalankan python3 web_video.py dulu, lalu buka ulang halaman ini.";
+st.textContent="Server tidak terdeteksi. Jalankan python3 web_video.py dulu, lalu buka lewat http://localhost:8000/.";
 }}catch(err){st.textContent="Error: "+err.message;}
 finally{btn.disabled=false;}});
 
 unduh.addEventListener("click",()=>{
 if(urlFile){window.open(urlFile,"_blank");return;}
-if(blobUrl){const a=document.createElement("a");a.href=blobUrl;a.download="video_ai.webm";a.click();}});
+});
 buka.addEventListener("click",()=>{if(urlFile)window.open(urlFile,"_blank");});
 })();
 </script>
