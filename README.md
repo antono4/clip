@@ -92,3 +92,16 @@ situs online bila memakai alternatif di atas.
 
 Dibuat oleh AI agent (OpenHands) atas permintaan pengguna.
  
+
+## Mode Web (mudah dipakai di browser
+
+Ada juga server web kecil agar Anda cukup membuka browser: tulis teks,
+klik tombol, video langsung jadi dan bisa diputar/diunduh.
+
+```bash
+python3 web_video.py
+# lalu buka:  http://localhost:8000/
+```
+
+File hasil tersimpan otomatis di folder `hasils/` di samping server.
+Bisa pilih port lain: `python3 web_video.py 9000`
