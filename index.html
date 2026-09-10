@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Video Maker — Gratis</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: radial-gradient(1200px 800px at 20% 10%, #0b2545 0%, #050b1c 55%, #02040c 100%);
+    color: #e6f0ff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .card { background: rgba(13, 25, 48, 0.75); border: 1px solid rgba(120, 170, 255, 0.25); border-radius: 24px;
+             padding: 36px 30px; max-width: 640px; width: 100%; box-shadow: 0 24px 70px rgba(0,0,0,0.6); backdrop-filter: blur(12px); }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; display: flex; align-items: center; gap:  ́ 10px; }
+  h1 span { font-size: 1.9rem; }
+  p.sub { color: #8ab6ff; margin-bottom: 20px; font-size: 0.95rem; }
+  label { display: block; font-size: 0.85rem; color: #b9d2ff; margin:  ́14px 0 6px; }
+  input, textarea, select {
+    width: 100%; padding: 12px 14px; border-radius: 12px;
+    border: 1px solid rgba(140, 170, 255, 0.35); background: rgba(4, 10, 24, 0.8);
+    color: #fff; font-size: 1rem; outline: none; transition: 0.2s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: #64b5ff; box-shadow: 0 0 0 3px rgba(100, 180, 255, 0.25); }
+  textarea { min-height: 130px; resize: vertical; }
+  .row { display: flex; gap:  ́12px; }
+  .row > div { flex:  ́1; }
+  button {
+    width: 100%; margin-top: 22px; padding: 14px; font-size: 1.05rem; font-weight: 700;
+    color: #03122b; background: linear-gradient(90deg, #38bdf8, #818cf8);
+    border: none; border-radius: 12px; cursor: pointer; transition: 0.25s;
+  }
+  button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(56, 189, 248, 0.45); }
+  button:disabled { opacity: 0.55; cursor: wait; }
+  .note { margin-top: 16px; font-size: 0.8rem; color: #7289b8; text-align: center; }
+  .status { margin-top: 16px; font-size: 0.9rem; min-height: 22px; text-align: center; color: #9fe8b0; }
+  video { width: 100%; border-radius: 14px; margin-top: 14px; background: #000; display: none; }
+  .toolbar { display: none; gap:  ́10px; margin-top:  ́12px; }
+  .toolbar button { margin-top: 0; padding: 10px; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1><span>🎬</span> AI Video Maker</h1>
+  <p class="sub">Gratis — tanpa watermark. Ketik teks anda, lalu buat videonya langsung di browser.</p>
+
+  <form id="form">
+    <label for="judul">Judul video</label>
+    <input id="judul" type="text" placeholder="Contoh:  Tips Menabung" autocomplete="off">
+
+    <label for="narasi">Teks narasi</label>
+    <textarea id="narasi" placeholder="Tulis kalimat narasi di sini. Tiap kalimat akan menjadi satu slide."></textarea>
+
+    <div class="row">
+      <div>
+        <label for="bahasa">Bahasa suara</label>
+        <select id="bahasa">
+          <option value="id-ID">🇮🇩 Indonesia</option>
+          <option value="en-US">🇬🇧 English</option>
+          <option value="ar-SA">🇸🇦 Arab</option>
+          <option value="es-ES">🇪🇸 Spanyol</option>
+          <option value="ja-JP">🇯🇵 Jepang</option>
+        </select>
+      </div>
+      <div>
+        <label for="mode">Mode render</label>
+        <select id="mode">
+          <option value="ai">⚡ Terbaik (server AI</option>
+          <option value="browser">🌐 Offline (browser</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" id="btn">✨ Buat Video Sekarang</button>
+  </form>
+
+  <div class="status" id="status"></div>
+  <div class="toolbar" id="toolbar">
+    <button type="button" id="btnUnduh">⬇️ Unduh Video</button>
+    <button type="button" id="btnBuka">🔗 Buka File</button>
+  </div>
+  <video id="player" controls></video>
+  <p class="note">Mode Terbaik memakai server AI lokal (web_video.py untuk MP4 sejati). Kalau file dibuka langsung tanp server, halaman otomatis pindah ke mode Offline yang diproses 100% di browser.</p>
+</div>
+
+<script>
+(() => {
+const $=(id)=>document.getElementById(id);
+const judul=$("judul"),narasi=$("narasi"),bahasa=$("bahasa"),mode=$("mode");
+const btn=$("btn"),st=$("status"),vid=$("player"),tb=$("toolbar");
+const unduh=$("btnUnduh"),buka=$("btnBuka");
+let urlFile=null,blobUrl=null;
+
+async function cekServer(){
+try{const r=await fetch("/",{method:"HEAD"});return r.ok;}catch(_){return false;}}
+
+$("form").addEventListener("submit",async(e)=>{
+e.preventDefault();const t=narasi.value.trim();
+if(!t){st.textContent="Narasi masih kosong.";return;}
+btn.disabled=true;st.textContent="Menyiapkan...";
+vid.style.display="none";tb.style.display="none";
+try{
+const pakai=(mode.value==="ai")&&await cekServer();
+if(pakai){
+st.textContent="Server AI sedang membuat video MP4... tunggu sebentar.";
+const r=await fetch("/buat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({judul:judul.value,narasi:t,bahasa:bahasa.value})});
+const d=await r.json();
+if(!d.ok)throw new Error(d.error||"Server gagal.");
+urlFile=d.url;vid.src=urlFile;vid.style.display="block";vid.load();
+tb.style.display="flex";st.textContent="Video MP4 jadi. Bisa diputar atau diunduh.";
+}else{
+st.textContent="Server tidak terdeteksi. Jalankan python3 web_video.py dulu, lalu buka ulang halaman ini.";
+}}catch(err){st.textContent="Error: "+err.message;}
+finally{btn.disabled=false;}});
+
+unduh.addEventListener("click",()=>{
+if(urlFile){window.open(urlFile,"_blank");return;}
+if(blobUrl){const a=document.createElement("a");a.href=blobUrl;a.download="video_ai.webm";a.click();}});
+buka.addEventListener("click",()=>{if(urlFile)window.open(urlFile,"_blank");});
+})();
+</script>
+</body>
+</html>
