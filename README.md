@@ -12,9 +12,23 @@ sepenuhnya **gratis**, **tanpa watermark**, dan **100% lokal** di komputer Anda.
 
 ## Cara Instalasi
 
+> **Catatan:** Bila muncul error `externally-managed-environment` (PEP 668), gunakan
+> virtual environment seperti di bawah ini — ini juga cara yang paling disarankan.
+
 ```bash
+# 1. Buat virtual environment (sekali saja
+python3 -m venv venv
+
+# 2. Aktifkan
+source venv/bin/activate        # Linux/macOS
+# venv\Scripts\activate        # Windows (cmd#
+
+# 3. Pasang dependensi
 pip install moviepy pillow gtts
 python -m pip install imageio-ffmpeg   # ffmpeg untuk menulis MP4
+
+# 4. Jalankan
+python video_ai.py "Judul Video" -n "Kalimat pertama. Kalimat kedua."
 ```
 
 ## Cara Pakai
