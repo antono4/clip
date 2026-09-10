@@ -12,9 +12,23 @@ sepenuhnya **gratis**, **tanpa watermark**, dan **100% lokal** di komputer Anda.
 
 ## Cara Instalasi
 
+> **Catatan:** Bila muncul error `externally-managed-environment` (PEP 668), gunakan
+> virtual environment seperti di bawah ini — ini juga cara yang paling disarankan.
+
 ```bash
+# 1. Buat virtual environment (sekali saja
+python3 -m venv venv
+
+# 2. Aktifkan
+source venv/bin/activate        # Linux/macOS
+# venv\Scripts\activate        # Windows (cmd#
+
+# 3. Pasang dependensi
 pip install moviepy pillow gtts
 python -m pip install imageio-ffmpeg   # ffmpeg untuk menulis MP4
+
+# 4. Jalankan
+python video_ai.py "Judul Video" -n "Kalimat pertama. Kalimat kedua."
 ```
 
 ## Cara Pakai
@@ -78,3 +92,22 @@ situs online bila memakai alternatif di atas.
 
 Dibuat oleh AI agent (OpenHands) atas permintaan pengguna.
  
+
+## Mode Web (mudah dipakai di browser
+
+Ada juga server web kecil agar Anda cukup membuka browser: tulis teks,
+klik tombol, video langsung jadi dan bisa diputar/diunduh.
+
+```bash
+python3 web_video.py
+# lalu buka:  http://localhost:8000/
+```
+
+File hasil tersimpan otomatis di folder `hasils/` di samping server.
+Bisa pilih port lain: `python3 web_video.py 9000`
+
+### Halaman `index.html`
+
+File `index.html` adalah antarmuka seni sendiri di repo ini — buka di browser saat
+server jalan, atau buka langsung sebagai file untuk petunjuknya. Render MP4 paling
+mantap tetap lewat server AI (`web_video.py`).
