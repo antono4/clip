@@ -105,3 +105,9 @@ python3 web_video.py
 
 File hasil tersimpan otomatis di folder `hasils/` di samping server.
 Bisa pilih port lain: `python3 web_video.py 9000`
+
+### Halaman `index.html`
+
+File `index.html` adalah antarmuka seni sendiri di repo ini — buka di browser saat
+server jalan, atau buka langsung sebagai file untuk petunjuknya. Render MP4 paling
+mantap tetap lewat server AI (`web_video.py`).
